@@ -28,16 +28,16 @@ export const createWorker = (code, initialState) => {
 };
 
 export const createReduxWorker = (code, initialState) => {
-  const webWorkerInstance = createWorker(code, initialState);
+  const worker = createWorker(code, initialState);
   const runActionOnWorker = action =>
     new Promise((resolve, reject) => {
       const responseReceiver = result => {
-        webWorkerInstance.removeEventListener("message", responseReceiver);
+        worker.removeEventListener("message", responseReceiver);
         const update = result.data;
         resolve(update);
       };
-      webWorkerInstance.addEventListener("message", responseReceiver);
-      webWorkerInstance.postMessage(action);
+      worker.addEventListener("message", responseReceiver);
+      worker.postMessage(action);
     });
   return store => next => action => {
     if (action.thread) {
